@@ -144,6 +144,90 @@ class Uploader:
                     temp_lecture.timetables.append(temp_entry)
                 session.add(temp_lecture)
 
+    
+        with io.open(E3_COURSES, 'r', encoding='utf8') as temp_e3_courses:
+            
+                temp_e3_courses = json.load(temp_e3_courses)
+
+        for e3_course in temp_e3_courses:
+                selected = e3_course["selected"] 
+                name = e3_course["Title"]   
+                url = e3_course["Link"]    
+                catalog = e3_course["catalog"] 
+                subject_type = e3_course["Type"]   
+                sws = e3_course["SWS"]    
+                num_part = e3_course["Erwartete Teilnehmer"]    
+                max_part = e3_course["Max. Teilnehmer"]    
+                credit = e3_course["Credits"]    
+                language = e3_course["Language"]    
+                description = e3_course["Description"]    
+                location = e3_course["Location"]    
+                exam_type = e3_course["Exam"]    
+                time_manual = e3_course["Times_manual"]    
+                aus_ing_bach = e3_course["Ausgeschlossen_Ingenieurwissenschaften_Bachelor"]    
+               
+             
+
+                    
+                temp_e3_courses = E3_Courses(
+                    selected=selected,
+                    name=name,
+                    url=url,
+                    catalog=catalog,
+                    subject_type=subject_type,
+                    sws=sws,
+                    num_expected_participants=num_part,
+                    max_participants=max_part,
+                    credit=credit,
+                    language=language,
+                    description=description,
+                    location=location,
+                    exam_type=exam_type,
+                    time_manual=time_manual,
+                    ausgeschlossen_ingenieurwissenschaften_bachelor=aus_ing_bach
+                
+
+                )
+        temp_e3_courses.close()
+        with io.open(E3_COURSES, 'r', encoding='utf8') as temp_e3_Rating:
+             temp_e3_Rating = json.load(temp_e3_Rating)
+
+        for e3_course in temp_e3_Rating:
+                fairness = e3_course["fairness"]    
+                support = e3_course["support"]    
+                material = e3_course["material"]    
+                fun = e3_course["fun"]    
+                comprehensibility = e3_course["comprehensibility"]    
+                interesting = e3_course["interesting"]    
+                grade_effort = e3_course["grade_effort"] 
+
+                temp_e3_Rating = E3_Rating(
+                    fairness = fairness,
+                    support = support,
+                    material = material,
+                    fun = fun,
+                    comprehensibility = comprehensibility,
+                    interesting = interesting,
+                    grade_effort = grade_effort
+                )
+
+        temp_e3_Rating.close()
+        session.add(temp_e3_courses)
+        session.add(temp_e3_Rating)
+
+
+        try:
+            session.commit()
+        except:
+            session.rollback()
+        finally:
+            session.close()
+            ## Delete the e3_course.json file if it exists
+            try:
+                os.remove(E3_COURSES)
+            except FileNotFoundError:
+                print("File Does not exist")
+
             data_file.close()
 
         session.commit()
